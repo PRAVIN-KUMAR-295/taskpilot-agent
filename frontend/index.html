@@ -3,18 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>TaskPilot AI</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskPilot AI — Autonomous Task Agent</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -23,63 +14,73 @@
 
         <header class="header">
             <div>
-                <h1>TaskPilot AI</h1>
-                <p>Autonomous AI Productivity Agent</p>
+                <div class="brand-row">
+                    <h1>TaskPilot AI</h1>
+                    <span class="badge-agent">Autonomous Agent</span>
+                </div>
+                <p>Everyday Productivity & Autonomous Workflow Assistant</p>
             </div>
 
-            <div class="status">
-                <span class="status-dot"></span>
-                <span>Online</span>
+            <div class="status" id="backendStatus" title="Backend connection status">
+                <span class="status-dot checking" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
             </div>
         </header>
 
-
         <main class="chat-container">
 
-            <div
-                id="chatBox"
-                class="chat-box"
-            >
+            <!-- Quick Suggestion Chips -->
+            <div class="quick-chips">
+                <button type="button" class="chip" data-prompt="Create a task to prepare my hackathon presentation tomorrow with high priority">
+                    + Presentation Task
+                </button>
+                <button type="button" class="chip" data-prompt="Show me my pending tasks">
+                    📋 View Tasks
+                </button>
+                <button type="button" class="chip" data-prompt="Search for Artificial Intelligence trends">
+                    🔍 Search AI
+                </button>
+                <button type="button" class="chip" data-prompt="Complete task #1">
+                    ✓ Complete Task
+                </button>
+                <button type="button" class="chip" data-prompt="Delete task #1">
+                    ⚠️ Test Approval
+                </button>
+            </div>
+
+            <div id="chatBox" class="chat-box">
 
                 <div class="message assistant">
                     <div class="avatar">AI</div>
-
                     <div class="message-content">
-                        <div class="sender">
-                            TaskPilot
-                        </div>
-
+                        <div class="sender">TaskPilot</div>
                         <div class="bubble">
-                            Hi! I'm TaskPilot. Tell me what you want to do.
+                            Hello! I am <strong>TaskPilot</strong>, your autonomous agent for everyday tasks.
+                            <br><br>
+                            I can manage tasks, track due dates, research information, and ask for confirmation before risky actions.
+                            <br><br>
+                            <em>Try saying: "Create a task to finish the hackathon demo tomorrow" or click one of the quick prompts above.</em>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-
             <div class="input-area">
-
                 <input
                     id="messageInput"
                     type="text"
-                    placeholder="Ask TaskPilot..."
+                    placeholder="Ask TaskPilot to plan, create tasks, search info..."
                     autocomplete="off"
                 >
-
-                <button
-                    id="sendButton"
-                    type="button"
-                >
+                <button id="sendButton" type="button">
                     Send
                 </button>
-
             </div>
 
         </main>
 
     </div>
-
 
     <script src="app.js"></script>
 
