@@ -252,4 +252,5 @@ pytest -v
 
 - **OpenAI Quota**: In environments where OpenAI credits are depleted (Error 429), TaskPilot automatically falls back to its deterministic local engine so all everyday task workflows remain fully operational.
 - **Calendar Integrations**: Future versions can connect directly to Google Calendar / Outlook APIs for automatic calendar synchronization.
-- **Multi-User Support**: Currently designed for single-user local productivity with local JSON persistence; multi-tenant database support (PostgreSQL/SQLite) can be integrated seamlessly.
+- **Multi-User Support**: Currently designed for single-user local productivity with local JSON persistence; multi-tenant database support (PostgreSQL/SQLite) can be integrated seamlessly.#   t a s k p i l o t - a g e n t  
+ 
