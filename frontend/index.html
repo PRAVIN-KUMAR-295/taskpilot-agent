@@ -8,6 +8,34 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    // Prevent dev live-server from reloading the page when the backend writes to the SQLite database
+    (function () {
+      if (typeof window !== "undefined" && window.WebSocket) {
+        var OriginalWebSocket = window.WebSocket;
+        window.WebSocket = function (url, protocols) {
+          var ws = new OriginalWebSocket(url, protocols);
+          var userHandler = null;
+          try {
+            Object.defineProperty(ws, "onmessage", {
+              get: function () { return userHandler; },
+              set: function (fn) {
+                userHandler = function (e) {
+                  if (e && e.data === "reload") {
+                    console.info("[TaskPilot] Live reload suppressed during active agent execution.");
+                    return;
+                  }
+                  if (fn) fn.call(this, e);
+                };
+              }
+            });
+          } catch (err) {}
+          return ws;
+        };
+        window.WebSocket.prototype = OriginalWebSocket.prototype;
+      }
+    })();
+  </script>
 </head>
 <body class="dark-theme">
 

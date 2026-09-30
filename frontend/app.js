@@ -26,7 +26,7 @@ function getApiBase() {
       }
       // If frontend is served by Live Server (port 5500), Vite (5173), etc.,
       // route calls to the FastAPI backend running on port 8000
-      return `http://${hostname}:8000`;
+      return "http://127.0.0.1:8000";
     }
 
     // Production (Render, Railway, custom domain)
@@ -234,8 +234,7 @@ function setupCommandInputs() {
   if (dashBtn && dashInput) {
     dashBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      const val = dashInput.value.trim();
-      if (!val) return;
+      const val = dashInput.value.trim() || "Plan my day and prioritize my tasks.";
       dashInput.value = "";
       switchTab("workspace");
       runAgentGoal(val);
@@ -351,6 +350,10 @@ async function runAgentGoal(goal, confirmedAction = null) {
 
     // Render Timeline Steps received from backend
     renderTimelineFromRun(result.timeline || []);
+
+    if (result.status === "FAILED" || result.success === false) {
+      throw new Error(result.error || result.summary || "Agent execution failed");
+    }
 
     // Check if the agent paused for Human Approval
     if (result.status === "WAITING_FOR_APPROVAL" && result.actionPendingApproval) {

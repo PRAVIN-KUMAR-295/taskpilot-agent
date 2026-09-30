@@ -69,6 +69,10 @@ class AgentOrchestrator:
         # SCENARIO A: RESUMING AFTER USER CONFIRMATION
         # ==========================================
         if confirmed_action:
+            AgentRunRepository.create(
+                conn, run_id, user_id, goal or "Confirmed Action", "CONFIRMED_EXECUTION",
+                status="EXECUTING", requires_approval=False, summary="Executing confirmed actions."
+            )
             log_step("APPROVAL_RECEIVED", "completed", "User confirmed approved action. Resuming autonomous execution.")
             action_type = confirmed_action.get("type", "")
 
@@ -177,6 +181,12 @@ class AgentOrchestrator:
         intent = analysis.get("intent", "PROJECT_PLAN")
         entities = analysis.get("entities", {})
         memory_ctx = analysis.get("memory_context", {})
+
+        # Ensure run record exists prior to any tool execution or logging
+        AgentRunRepository.create(
+            conn, run_id, user_id, goal, intent,
+            status="UNDERSTANDING", requires_approval=False, summary="Agent understanding user goal."
+        )
         log_step(
             "UNDERSTANDING", "completed",
             f"Goal understood: Classified intent as '{intent}' (Confidence: {analysis.get('confidence', 0.95):.0%}).",
