@@ -3,9 +3,39 @@
  * PS 01 – Autonomous Agents for Everyday Apps
  */
 
-const API_BASE = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
-  ? window.location.origin
-  : "http://127.0.0.1:8000";
+function getApiBase() {
+  if (typeof window !== "undefined") {
+    if (window.__TASKPILOT_API_BASE__) return window.__TASKPILOT_API_BASE__;
+    try {
+      const stored = localStorage.getItem("taskpilot_api_base");
+      if (stored) return stored;
+    } catch (e) {}
+
+    const { hostname, port, origin, protocol } = window.location;
+
+    // File protocol
+    if (protocol === "file:" || !origin || origin === "null") {
+      return "http://127.0.0.1:8000";
+    }
+
+    // Local development
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      // If frontend is served directly by the FastAPI backend on port 8000
+      if (port === "8000") {
+        return origin;
+      }
+      // If frontend is served by Live Server (port 5500), Vite (5173), etc.,
+      // route calls to the FastAPI backend running on port 8000
+      return `http://${hostname}:8000`;
+    }
+
+    // Production (Render, Railway, custom domain)
+    return origin;
+  }
+  return "http://127.0.0.1:8000";
+}
+
+const API_BASE = getApiBase();
 
 // Global App State
 const state = {
@@ -100,11 +130,15 @@ async function api(path, options = {}) {
     return await res.json();
   } catch (error) {
     console.warn(`API Error [${path}]:`, error.message);
+    if (error.message === "Failed to fetch" || error.name === "TypeError") {
+      throw new Error(`Failed to connect to TaskPilot backend at ${API_BASE}. Make sure the FastAPI server is running on port 8000.`);
+    }
     throw error;
   }
 }
 
 async function checkHealth() {
+  console.log(`[TaskPilot] Connecting to API backend at: ${API_BASE}`);
   try {
     const health = await api("/api/health");
     const statusLabel = document.getElementById("agentStatusLabel");
@@ -112,9 +146,10 @@ async function checkHealth() {
       statusLabel.textContent = `Agent Online (${health.aws_bedrock_configured ? "AWS Bedrock" : "Local Heuristic"})`;
     }
   } catch (e) {
+    console.warn(`[TaskPilot] Could not reach backend at ${API_BASE}/api/health:`, e.message);
     const statusLabel = document.getElementById("agentStatusLabel");
     if (statusLabel) {
-      statusLabel.textContent = "Agent Running (Local Fallback)";
+      statusLabel.textContent = "Agent Offline (Check Backend on :8000)";
     }
   }
 }
