@@ -35,7 +35,7 @@ def search_information(query: str, timeout: int = 6) -> Dict[str, Any]:
         request = urllib.request.Request(
             search_url,
             headers={
-                "User-Agent": "TaskPilotAgent/1.0 (Autonomous-Task-Agent; contact@example.com)"
+                "User-Agent": "TaskPilotAutonomousAgent/2.0 (https://taskpilot.ai; dev@taskpilot.ai)"
             }
         )
 

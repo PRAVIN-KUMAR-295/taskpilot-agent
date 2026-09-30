@@ -35,28 +35,28 @@
 
       <!-- Navigation Tabs -->
       <nav class="nav-tabs" id="navTabs">
-        <button class="nav-tab active" data-tab="dashboard">
+        <button type="button" class="nav-tab active" data-tab="dashboard">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           Dashboard
         </button>
-        <button class="nav-tab nav-tab-highlight" data-tab="workspace">
+        <button type="button" class="nav-tab nav-tab-highlight" data-tab="workspace">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
           Agent Workspace
           <span class="tab-badge">Hero</span>
         </button>
-        <button class="nav-tab" data-tab="tasks">
+        <button type="button" class="nav-tab" data-tab="tasks">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
           Tasks
         </button>
-        <button class="nav-tab" data-tab="calendar">
+        <button type="button" class="nav-tab" data-tab="calendar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
           Schedule
         </button>
-        <button class="nav-tab" data-tab="activity">
+        <button type="button" class="nav-tab" data-tab="activity">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
           Activity Log
         </button>
-        <button class="nav-tab" data-tab="memory">
+        <button type="button" class="nav-tab" data-tab="memory">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
           Memory
         </button>
@@ -71,7 +71,7 @@
         </div>
 
         <!-- Demo Presets Trigger -->
-        <button id="btnDemoMode" class="btn-demo-mode" title="Launch Hackathon Demo Scenarios">
+        <button type="button" id="btnDemoMode" class="btn-demo-mode" title="Launch Hackathon Demo Scenarios">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
           Demo Scenarios
         </button>
@@ -100,7 +100,7 @@
             </p>
             <div class="command-box">
               <input type="text" id="dashboardCommandInput" placeholder="Tell TaskPilot what you want to accomplish... (e.g. 'Plan my day and prioritize my tasks')" autocomplete="off">
-              <button id="btnDashboardRun" class="btn-primary">
+              <button type="button" id="btnDashboardRun" class="btn-primary">
                 <span>Engage Agent</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
@@ -108,11 +108,11 @@
             <!-- Quick Suggestion Chips -->
             <div class="quick-presets">
               <span class="presets-label">Quick Scenarios:</span>
-              <button class="chip" data-prompt="Create a plan to finish my AWS project by Friday.">🚀 Finish AWS Project by Friday</button>
-              <button class="chip" data-prompt="Create a study plan for my AWS exam next week.">📚 7-Day AWS Exam Plan</button>
-              <button class="chip" data-prompt="Plan my day and prioritize my tasks.">⚡ Plan My Day</button>
-              <button class="chip" data-prompt="Optimize my schedule for peak evening focus.">📅 Optimize Schedule</button>
-              <button class="chip" data-prompt="Remind me to submit the hackathon presentation tomorrow at 8 PM.">⏰ Assignment Reminder</button>
+              <button type="button" class="chip" data-prompt="Create a plan to finish my AWS project by Friday.">🚀 Finish AWS Project by Friday</button>
+              <button type="button" class="chip" data-prompt="Create a study plan for my AWS exam next week.">📚 7-Day AWS Exam Plan</button>
+              <button type="button" class="chip" data-prompt="Plan my day and prioritize my tasks.">⚡ Plan My Day</button>
+              <button type="button" class="chip" data-prompt="Optimize my schedule for peak evening focus.">📅 Optimize Schedule</button>
+              <button type="button" class="chip" data-prompt="Remind me to submit the hackathon presentation tomorrow at 8 PM.">⏰ Assignment Reminder</button>
             </div>
           </div>
 
@@ -200,7 +200,7 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 Today's Core Focus
               </div>
-              <button class="btn-text-action" id="btnDashViewAllTasks">View All Tasks →</button>
+              <button type="button" class="btn-text-action" id="btnDashViewAllTasks">View All Tasks →</button>
             </div>
             <div class="tasks-mini-list" id="dashTasksList">
               <div class="skeleton-row"></div>
@@ -214,7 +214,7 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                 Autonomous Agent Audit Trail
               </div>
-              <button class="btn-text-action" id="btnDashViewAudit">Audit Log →</button>
+              <button type="button" class="btn-text-action" id="btnDashViewAudit">Audit Log →</button>
             </div>
             <div class="audit-mini-stream" id="dashAuditStream">
               <div class="skeleton-row"></div>
@@ -243,35 +243,35 @@
             <div class="demo-scenario-box">
               <div class="scenario-title">Preset Scenarios (1-Click Run):</div>
               <div class="scenario-buttons">
-                <button class="btn-scenario active" data-scenario="aws-friday">
+                <button type="button" class="btn-scenario active" data-scenario="aws-friday">
                   <span class="sc-icon">🚀</span>
                   <div class="sc-content">
                     <div class="sc-heading">Finish AWS Project by Friday</div>
                     <div class="sc-sub">Multi-step plan + approval + schedule</div>
                   </div>
                 </button>
-                <button class="btn-scenario" data-scenario="aws-study">
+                <button type="button" class="btn-scenario" data-scenario="aws-study">
                   <span class="sc-icon">📚</span>
                   <div class="sc-content">
                     <div class="sc-heading">Prepare for AWS Exam</div>
                     <div class="sc-sub">7-day breakdown + evening focus</div>
                   </div>
                 </button>
-                <button class="btn-scenario" data-scenario="plan-day">
+                <button type="button" class="btn-scenario" data-scenario="plan-day">
                   <span class="sc-icon">⚡</span>
                   <div class="sc-content">
                     <div class="sc-heading">Plan My Day & Prioritize</div>
                     <div class="sc-sub">Task triage + schedule alignment</div>
                   </div>
                 </button>
-                <button class="btn-scenario" data-scenario="hackathon-plan">
+                <button type="button" class="btn-scenario" data-scenario="hackathon-plan">
                   <span class="sc-icon">🏆</span>
                   <div class="sc-content">
                     <div class="sc-heading">Create Hackathon Plan</div>
                     <div class="sc-sub">Milestones + pitch prep + demo</div>
                   </div>
                 </button>
-                <button class="btn-scenario" data-scenario="safety-test">
+                <button type="button" class="btn-scenario" data-scenario="safety-test">
                   <span class="sc-icon">⚠️</span>
                   <div class="sc-content">
                     <div class="sc-heading">Test Human Safety Confirmation</div>
@@ -296,7 +296,7 @@
             <div class="command-input-container">
               <div class="command-input-row">
                 <textarea id="workspaceGoalInput" rows="2" placeholder="e.g. 'Create a plan to finish my AWS project by Friday.'" autocomplete="off"></textarea>
-                <button id="btnWorkspaceRun" class="btn-primary btn-run">
+                <button type="button" id="btnWorkspaceRun" class="btn-primary btn-run">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 </button>
               </div>
@@ -374,11 +374,11 @@
               <div class="approval-title" id="approvalCardTitle">Approve Execution Plan</div>
               <div class="approval-desc" id="approvalCardDesc">The agent generated subtasks and prepared tool executions. Confirmation is required before database mutation.</div>
               <div class="approval-actions-row">
-                <button class="btn-approve" id="btnApprovePlan">
+                <button type="button" class="btn-approve" id="btnApprovePlan">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   Approve & Execute Autonomously
                 </button>
-                <button class="btn-reject" id="btnRejectPlan">Reject Plan</button>
+                <button type="button" class="btn-reject" id="btnRejectPlan">Reject Plan</button>
               </div>
             </div>
 
@@ -415,8 +415,8 @@
           <div class="tasks-page-left">
             <h2>Task Management</h2>
             <div class="tasks-view-toggles">
-              <button class="btn-toggle active" id="btnViewKanban">Kanban Board</button>
-              <button class="btn-toggle" id="btnViewList">List View</button>
+              <button type="button" class="btn-toggle active" id="btnViewKanban">Kanban Board</button>
+              <button type="button" class="btn-toggle" id="btnViewList">List View</button>
             </div>
           </div>
           <div class="tasks-page-controls">
@@ -436,7 +436,7 @@
               <option value="Testing">Testing</option>
               <option value="General">General</option>
             </select>
-            <button class="btn-primary" id="btnOpenNewTaskModal">
+            <button type="button" class="btn-primary" id="btnOpenNewTaskModal">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               New Task
             </button>
@@ -524,11 +524,11 @@
             <p>Intelligent time blocks mapped to your working hours and peak focus intervals.</p>
           </div>
           <div class="cal-header-actions">
-            <button class="btn-primary" id="btnOptimizeSchedule">
+            <button type="button" class="btn-primary" id="btnOptimizeSchedule">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
               Optimize My Schedule with AI
             </button>
-            <button class="btn-secondary" id="btnAddScheduleBlock">
+            <button type="button" class="btn-secondary" id="btnAddScheduleBlock">
               + New Focus Block
             </button>
           </div>
@@ -548,7 +548,7 @@
           <div class="reminders-panel glass-card">
             <div class="panel-heading">
               <h3>Upcoming Reminders</h3>
-              <button class="btn-text-action" id="btnCreateReminder">+ Add Reminder</button>
+              <button type="button" class="btn-text-action" id="btnCreateReminder">+ Add Reminder</button>
             </div>
             <div class="reminders-stream" id="remindersStream"></div>
           </div>
@@ -564,7 +564,7 @@
             <h2>Autonomous Agent Audit Trail</h2>
             <p>Full transparency and verification checks for every action executed by TaskPilot.</p>
           </div>
-          <button class="btn-secondary" id="btnRefreshActivity">
+          <button type="button" class="btn-secondary" id="btnRefreshActivity">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
             Refresh Logs
           </button>
@@ -597,7 +597,7 @@
             <h2>Agent Memory & User Preferences</h2>
             <p>TaskPilot remembers your working hours, preferred study habits, and constraints to tailor future planning.</p>
           </div>
-          <button class="btn-primary" id="btnAddMemory">
+          <button type="button" class="btn-primary" id="btnAddMemory">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Add Preference
           </button>
@@ -626,7 +626,7 @@
     <div class="modal-card glass-card">
       <div class="modal-header">
         <h3 id="taskModalTitle">Create New Task</h3>
-        <button class="btn-close-modal" id="btnCloseTaskModal">✕</button>
+        <button type="button" class="btn-close-modal" id="btnCloseTaskModal">✕</button>
       </div>
       <form id="taskForm">
         <div class="form-group">
@@ -675,7 +675,7 @@
     <div class="modal-card glass-card">
       <div class="modal-header">
         <h3>Add User Preference</h3>
-        <button class="btn-close-modal" id="btnCloseMemoryModal">✕</button>
+        <button type="button" class="btn-close-modal" id="btnCloseMemoryModal">✕</button>
       </div>
       <form id="memoryForm">
         <div class="form-group">
@@ -708,7 +708,7 @@
     <div class="modal-card glass-card">
       <div class="modal-header">
         <h3>Create Focus Block</h3>
-        <button class="btn-close-modal" id="btnCloseScheduleModal">✕</button>
+        <button type="button" class="btn-close-modal" id="btnCloseScheduleModal">✕</button>
       </div>
       <form id="scheduleForm">
         <div class="form-group">

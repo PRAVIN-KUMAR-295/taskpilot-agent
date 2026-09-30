@@ -81,15 +81,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 function setupNavigation() {
   const tabs = document.querySelectorAll(".nav-tab");
   tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
+    tab.addEventListener("click", (e) => {
+      e.preventDefault();
       const target = tab.dataset.tab;
       switchTab(target);
     });
   });
 
   // Dashboard shortcuts
-  document.getElementById("btnDashViewAllTasks")?.addEventListener("click", () => switchTab("tasks"));
-  document.getElementById("btnDashViewAudit")?.addEventListener("click", () => switchTab("activity"));
+  document.getElementById("btnDashViewAllTasks")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    switchTab("tasks");
+  });
+  document.getElementById("btnDashViewAudit")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    switchTab("activity");
+  });
 }
 
 function switchTab(tabId) {
@@ -225,7 +232,8 @@ function setupCommandInputs() {
   const dashInput = document.getElementById("dashboardCommandInput");
   const dashBtn = document.getElementById("btnDashboardRun");
   if (dashBtn && dashInput) {
-    dashBtn.addEventListener("click", () => {
+    dashBtn.addEventListener("click", (e) => {
+      e.preventDefault();
       const val = dashInput.value.trim();
       if (!val) return;
       dashInput.value = "";
@@ -242,7 +250,8 @@ function setupCommandInputs() {
 
   // Dashboard preset chips
   document.querySelectorAll(".chip").forEach(chip => {
-    chip.addEventListener("click", () => {
+    chip.addEventListener("click", (e) => {
+      e.preventDefault();
       const prompt = chip.dataset.prompt;
       if (prompt) {
         switchTab("workspace");
@@ -255,7 +264,8 @@ function setupCommandInputs() {
   const workInput = document.getElementById("workspaceGoalInput");
   const workBtn = document.getElementById("btnWorkspaceRun");
   if (workBtn && workInput) {
-    workBtn.addEventListener("click", () => {
+    workBtn.addEventListener("click", (e) => {
+      e.preventDefault();
       const val = workInput.value.trim();
       if (!val) return;
       workInput.value = "";
@@ -270,8 +280,14 @@ function setupCommandInputs() {
   }
 
   // Approval buttons
-  document.getElementById("btnApprovePlan")?.addEventListener("click", () => handlePlanApproval(true));
-  document.getElementById("btnRejectPlan")?.addEventListener("click", () => handlePlanApproval(false));
+  document.getElementById("btnApprovePlan")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    handlePlanApproval(true);
+  });
+  document.getElementById("btnRejectPlan")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    handlePlanApproval(false);
+  });
 }
 
 function setupScenarios() {
@@ -284,7 +300,8 @@ function setupScenarios() {
   };
 
   document.querySelectorAll(".btn-scenario").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
       document.querySelectorAll(".btn-scenario").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       const key = btn.dataset.scenario;
@@ -295,7 +312,8 @@ function setupScenarios() {
   });
 
   // Quick Demo Mode modal trigger
-  document.getElementById("btnDemoMode")?.addEventListener("click", () => {
+  document.getElementById("btnDemoMode")?.addEventListener("click", (e) => {
+    e.preventDefault();
     switchTab("workspace");
     runAgentGoal("Create a plan to finish my AWS project by Friday.");
   });
@@ -547,7 +565,8 @@ function appendChatMsg(sender, text) {
 // ==========================================
 function setupTaskControls() {
   // View toggle
-  document.getElementById("btnViewKanban")?.addEventListener("click", () => {
+  document.getElementById("btnViewKanban")?.addEventListener("click", (e) => {
+    e.preventDefault();
     state.tasksViewMode = "kanban";
     document.getElementById("btnViewKanban").classList.add("active");
     document.getElementById("btnViewList").classList.remove("active");
@@ -555,7 +574,8 @@ function setupTaskControls() {
     document.getElementById("tasksListContainer").classList.add("hidden");
   });
 
-  document.getElementById("btnViewList")?.addEventListener("click", () => {
+  document.getElementById("btnViewList")?.addEventListener("click", (e) => {
+    e.preventDefault();
     state.tasksViewMode = "list";
     document.getElementById("btnViewList").classList.add("active");
     document.getElementById("btnViewKanban").classList.remove("active");
@@ -677,10 +697,10 @@ function renderKanban() {
           <span>📅 ${t.due_date || "Today"}</span>
         </div>
         <div class="task-card-actions">
-          <button class="btn-card-ai" onclick="triggerTaskAiAction(${t.id}, 'explain')">💡 Why</button>
-          <button class="btn-card-ai" onclick="triggerTaskAiAction(${t.id}, 'prioritize')">⚡ Prioritize</button>
-          <button class="btn-card-ai" onclick="triggerTaskAiAction(${t.id}, 'subtasks')">🧩 Subtasks</button>
-          ${t.status !== "COMPLETED" ? `<button class="btn-card-complete" onclick="completeTask(${t.id})">✓ Done</button>` : ""}
+          <button type="button" class="btn-card-ai" onclick="triggerTaskAiAction(event, ${t.id}, 'explain')">💡 Why</button>
+          <button type="button" class="btn-card-ai" onclick="triggerTaskAiAction(event, ${t.id}, 'prioritize')">⚡ Prioritize</button>
+          <button type="button" class="btn-card-ai" onclick="triggerTaskAiAction(event, ${t.id}, 'subtasks')">🧩 Subtasks</button>
+          ${t.status !== "COMPLETED" ? `<button type="button" class="btn-card-complete" onclick="completeTask(event, ${t.id})">✓ Done</button>` : ""}
         </div>
       </div>
     `).join("");
@@ -704,15 +724,19 @@ function renderTasksTable() {
       <td>${t.estimated_duration} mins</td>
       <td><span class="badge-subtle">${t.source}</span></td>
       <td>
-        <button class="btn-card-ai" onclick="triggerTaskAiAction(${t.id}, 'prioritize')">Prioritize</button>
-        <button class="btn-card-ai" onclick="triggerTaskAiAction(${t.id}, 'subtasks')">Subtasks</button>
-        ${t.status !== "COMPLETED" ? `<button class="btn-card-complete" onclick="completeTask(${t.id})">✓</button>` : ""}
+        <button type="button" class="btn-card-ai" onclick="triggerTaskAiAction(event, ${t.id}, 'prioritize')">Prioritize</button>
+        <button type="button" class="btn-card-ai" onclick="triggerTaskAiAction(event, ${t.id}, 'subtasks')">Subtasks</button>
+        ${t.status !== "COMPLETED" ? `<button type="button" class="btn-card-complete" onclick="completeTask(event, ${t.id})">✓</button>` : ""}
       </td>
     </tr>
   `).join("");
 }
 
-async function completeTask(taskId) {
+async function completeTask(eOrTaskId, maybeTaskId) {
+  if (eOrTaskId && typeof eOrTaskId.preventDefault === "function") {
+    eOrTaskId.preventDefault();
+  }
+  const taskId = typeof eOrTaskId === "number" ? eOrTaskId : maybeTaskId;
   try {
     await api(`/api/tasks/${taskId}/complete`, { method: "POST" });
     showToast(`Task #${taskId} completed!`, "success");
@@ -723,7 +747,16 @@ async function completeTask(taskId) {
   }
 }
 
-async function triggerTaskAiAction(taskId, action) {
+async function triggerTaskAiAction(eOrTaskId, taskIdOrAction, maybeAction) {
+  let taskId, action;
+  if (eOrTaskId && typeof eOrTaskId.preventDefault === "function") {
+    eOrTaskId.preventDefault();
+    taskId = taskIdOrAction;
+    action = maybeAction;
+  } else {
+    taskId = eOrTaskId;
+    action = taskIdOrAction;
+  }
   try {
     const res = await api(`/api/tasks/${taskId}/ai-action`, {
       method: "POST",
@@ -746,7 +779,8 @@ async function triggerTaskAiAction(taskId, action) {
 // CALENDAR & SCHEDULE CONTROLLER
 // ==========================================
 function setupCalendarControls() {
-  document.getElementById("btnOptimizeSchedule")?.addEventListener("click", async () => {
+  document.getElementById("btnOptimizeSchedule")?.addEventListener("click", async (e) => {
+    e.preventDefault();
     try {
       showToast("Optimizing focus blocks with AI...", "info");
       const res = await api("/api/agent/optimize-schedule", { method: "POST" });
@@ -758,7 +792,8 @@ function setupCalendarControls() {
     }
   });
 
-  document.getElementById("btnAddScheduleBlock")?.addEventListener("click", () => {
+  document.getElementById("btnAddScheduleBlock")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("scheduleModal").classList.remove("hidden");
   });
 
@@ -786,7 +821,8 @@ function setupCalendarControls() {
     }
   });
 
-  document.getElementById("btnCreateReminder")?.addEventListener("click", () => {
+  document.getElementById("btnCreateReminder")?.addEventListener("click", (e) => {
+    e.preventDefault();
     const title = prompt("Reminder Title (e.g. Submit hackathon PPT):");
     if (!title) return;
     const time = prompt("Reminder Time (e.g. Tomorrow at 8:00 PM):", "Tomorrow at 8:00 PM");
@@ -847,7 +883,7 @@ async function refreshCalendar() {
                 <div class="reminder-time">${escapeHtml(r.reminder_time)} • ${r.channel}</div>
               </div>
             </div>
-            <button class="btn-close-modal" title="Dismiss" onclick="cancelReminder(${r.id})">✕</button>
+            <button type="button" class="btn-close-modal" title="Dismiss" onclick="cancelReminder(event, ${r.id})">✕</button>
           </div>
         `).join("");
       }
@@ -858,7 +894,11 @@ async function refreshCalendar() {
   }
 }
 
-async function cancelReminder(reminderId) {
+async function cancelReminder(eOrReminderId, maybeReminderId) {
+  if (eOrReminderId && typeof eOrReminderId.preventDefault === "function") {
+    eOrReminderId.preventDefault();
+  }
+  const reminderId = typeof eOrReminderId === "number" ? eOrReminderId : maybeReminderId;
   try {
     await api(`/api/reminders/${reminderId}`, { method: "DELETE" });
     showToast("Reminder dismissed.", "info");
@@ -872,7 +912,10 @@ async function cancelReminder(reminderId) {
 // ACTIVITY LOG & AUDIT CONTROLLER
 // ==========================================
 function setupActivityControls() {
-  document.getElementById("btnRefreshActivity")?.addEventListener("click", () => refreshActivity());
+  document.getElementById("btnRefreshActivity")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    refreshActivity();
+  });
 }
 
 async function refreshActivity() {
@@ -896,7 +939,7 @@ async function refreshActivity() {
         <td><span class="status-badge ${a.status}">${a.status}</span></td>
         <td><span class="verification-badge ${a.verification_status}">${a.verification_status === 'VERIFIED' ? '✓ VERIFIED' : a.verification_status}</span></td>
         <td><span style="font-family:var(--font-mono); font-size:0.75rem;">${a.verification_details?.elapsed_ms ? a.verification_details.elapsed_ms + ' ms' : '< 5ms'}</span></td>
-        <td><button class="btn-card-ai" onclick='inspectAction(${JSON.stringify(a).replace(/'/g, "&apos;")})'>Inspect</button></td>
+        <td><button type="button" class="btn-card-ai" onclick='inspectAction(event, ${JSON.stringify(a).replace(/'/g, "&apos;")})'>Inspect</button></td>
       </tr>
     `).join("");
   } catch (e) {
@@ -904,7 +947,11 @@ async function refreshActivity() {
   }
 }
 
-function inspectAction(action) {
+function inspectAction(eOrAction, maybeAction) {
+  if (eOrAction && typeof eOrAction.preventDefault === "function") {
+    eOrAction.preventDefault();
+  }
+  const action = maybeAction || eOrAction;
   alert(`Agent Action Audit Trail:\n\nTool: ${action.tool_name}\nAction: ${action.action_name}\nStatus: ${action.status}\nVerification: ${action.verification_status}\n\nInputs:\n${JSON.stringify(action.input_data, null, 2)}\n\nOutputs:\n${JSON.stringify(action.output_data, null, 2)}`);
 }
 
@@ -912,7 +959,8 @@ function inspectAction(action) {
 // MEMORY & USER PREFERENCES CONTROLLER
 // ==========================================
 function setupMemoryControls() {
-  document.getElementById("btnAddMemory")?.addEventListener("click", () => {
+  document.getElementById("btnAddMemory")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("memoryModal").classList.remove("hidden");
   });
 
@@ -956,7 +1004,7 @@ async function refreshMemory() {
         <div>
           <div class="memory-card-top">
             <span class="memory-category">${escapeHtml(m.category)}</span>
-            <button class="btn-del-memory" onclick="deleteMemory(${m.id})">✕</button>
+            <button type="button" class="btn-del-memory" onclick="deleteMemory(event, ${m.id})">✕</button>
           </div>
           <div class="memory-key">${escapeHtml(m.key)}</div>
           <div class="memory-val">${escapeHtml(m.value)}</div>
@@ -971,7 +1019,11 @@ async function refreshMemory() {
   }
 }
 
-async function deleteMemory(memoryId) {
+async function deleteMemory(eOrMemoryId, maybeMemoryId) {
+  if (eOrMemoryId && typeof eOrMemoryId.preventDefault === "function") {
+    eOrMemoryId.preventDefault();
+  }
+  const memoryId = typeof eOrMemoryId === "number" ? eOrMemoryId : maybeMemoryId;
   try {
     await api(`/api/memory/${memoryId}`, { method: "DELETE" });
     showToast("Preference removed from agent memory.", "info");
@@ -986,29 +1038,36 @@ async function deleteMemory(memoryId) {
 // ==========================================
 function setupModals() {
   // New task modal
-  document.getElementById("btnOpenNewTaskModal")?.addEventListener("click", () => {
+  document.getElementById("btnOpenNewTaskModal")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("taskModal").classList.remove("hidden");
   });
-  document.getElementById("btnCloseTaskModal")?.addEventListener("click", () => {
+  document.getElementById("btnCloseTaskModal")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("taskModal").classList.add("hidden");
   });
-  document.getElementById("btnCancelTaskModal")?.addEventListener("click", () => {
+  document.getElementById("btnCancelTaskModal")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("taskModal").classList.add("hidden");
   });
 
   // Memory modal
-  document.getElementById("btnCloseMemoryModal")?.addEventListener("click", () => {
+  document.getElementById("btnCloseMemoryModal")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("memoryModal").classList.add("hidden");
   });
-  document.getElementById("btnCancelMemoryModal")?.addEventListener("click", () => {
+  document.getElementById("btnCancelMemoryModal")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("memoryModal").classList.add("hidden");
   });
 
   // Schedule modal
-  document.getElementById("btnCloseScheduleModal")?.addEventListener("click", () => {
+  document.getElementById("btnCloseScheduleModal")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("scheduleModal").classList.add("hidden");
   });
-  document.getElementById("btnCancelScheduleModal")?.addEventListener("click", () => {
+  document.getElementById("btnCancelScheduleModal")?.addEventListener("click", (e) => {
+    e.preventDefault();
     document.getElementById("scheduleModal").classList.add("hidden");
   });
 
