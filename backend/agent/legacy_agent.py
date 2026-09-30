@@ -4,9 +4,10 @@ import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
 
-backend_dir = Path(__file__).resolve().parent
+backend_dir = Path(__file__).resolve().parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
+
 
 import openai
 from openai import OpenAI
@@ -35,8 +36,9 @@ def get_client() -> Optional[OpenAI]:
     """Get or initialize OpenAI client."""
     global _client
     if _client is None and is_openai_configured():
-        _client = OpenAI(api_key=OPENAI_API_KEY)
+        _client = OpenAI(api_key=OPENAI_API_KEY, timeout=3.0, max_retries=0)
     return _client
+
 
 
 # ==========================================

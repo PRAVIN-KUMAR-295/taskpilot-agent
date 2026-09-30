@@ -1,46 +1,105 @@
-from typing import Optional, List, Any, Dict
-from pydantic import BaseModel, Field
+from typing import Optional, List, Dict, Any
+from pydantic import BaseModel, EmailStr, Field
 
 
-class ChatRequest(BaseModel):
-    message: str = Field(..., min_length=1, max_length=2000, description="User request message")
-    confirmed_action: Optional[Dict[str, Any]] = Field(
-        default=None,
-        description="Action payload confirmed by user for risky operations"
-    )
+# Auth Schemas
+class RegisterRequest(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    email: str = Field(..., max_length=150)
+    password: str = Field(..., min_length=6)
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class AuthResponse(BaseModel):
+    success: bool
+    token: str
+    user: Dict[str, Any]
+    message: str = ""
+
+
+# Task Schemas
+class TaskCreateRequest(BaseModel):
+    title: str = Field(..., min_length=1)
+    description: Optional[str] = ""
+    priority: Optional[str] = "MEDIUM"  # LOW, MEDIUM, HIGH, URGENT
+    status: Optional[str] = "TODO"      # TODO, IN_PROGRESS, COMPLETED, BLOCKED
+    due_date: Optional[str] = None
+    estimated_duration: Optional[int] = 30
+    category: Optional[str] = "General"
+    dependencies: Optional[List[int]] = None
+
+
+class TaskUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    priority: Optional[str] = None
+    status: Optional[str] = None
+    due_date: Optional[str] = None
+    estimated_duration: Optional[int] = None
+    category: Optional[str] = None
+    dependencies: Optional[List[int]] = None
 
 
 class TaskItem(BaseModel):
     id: int
+    user_id: int
     title: str
-    priority: str = Field(default="medium")
-    status: str = Field(default="pending")  # "pending" or "completed"
-    completed: bool = Field(default=False)
-    due_date: Optional[str] = Field(default=None)
+    description: Optional[str] = ""
+    priority: str
+    status: str
+    due_date: Optional[str] = None
+    estimated_duration: int
+    category: str
+    source: str
     created_at: str
+    updated_at: str
 
 
-class TaskCreateRequest(BaseModel):
-    title: str = Field(..., min_length=1, max_length=200)
-    priority: str = Field(default="medium")
-    due_date: Optional[str] = Field(default=None)
+# Reminder Schemas
+class ReminderCreateRequest(BaseModel):
+    title: str
+    reminder_time: str
+    task_id: Optional[int] = None
+    channel: Optional[str] = "in_app"
 
 
-class TaskCompleteRequest(BaseModel):
-    task_id: int
+# Schedule Schemas
+class ScheduleCreateRequest(BaseModel):
+    title: str
+    start_time: str
+    end_time: str
+    task_id: Optional[int] = None
+    day_of_week: Optional[str] = "Today"
+    session_type: Optional[str] = "focus"
 
 
-class ActionApproval(BaseModel):
-    action_type: str
-    tool_name: str
-    arguments: Dict[str, Any]
-    prompt: str
-    warning: str
+# Memory Schemas
+class MemoryCreateRequest(BaseModel):
+    key: str
+    value: str
+    category: Optional[str] = "preference"
+
+
+# Agent Schemas
+class AgentRunRequest(BaseModel):
+    goal: Optional[str] = ""
+    message: Optional[str] = ""  # alias for goal
+    run_id: Optional[str] = None
+    confirmed_action: Optional[Dict[str, Any]] = None
+
+
+class ChatRequest(BaseModel):
+    message: str
+    confirmed_action: Optional[Dict[str, Any]] = None
 
 
 class ChatResponse(BaseModel):
     response: str
     success: bool = True
-    action_pending_approval: Optional[ActionApproval] = None
+    action_pending_approval: Optional[Dict[str, Any]] = None
     tasks: Optional[List[Dict[str, Any]]] = None
     error: Optional[str] = None

@@ -1,256 +1,248 @@
-# TaskPilot — Autonomous AI Agent for Everyday Tasks
+# ⚡ TaskPilot Agent
 
-> **Build Fast with AI: AI Build Challenge 2026**  
-> **Problem Statement:** PS-01 — Autonomous Agents for Everyday Apps  
-> **Track:** Autonomous Agent Workflow for Productivity & Everyday Tasks
+> **Autonomous AI Agent for Everyday Apps**  
+> *Build Fast with AI Challenge 2026 — Problem Statement 01 (PS 01)*
+
+[![Build & Test Status](https://img.shields.io/badge/tests-30%20passed-10b981.svg)](tests/)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.14-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-2.0.0-009688.svg)](https://fastapi.tiangolo.com/)
+[![AWS Bedrock](https://img.shields.io/badge/AWS%20Bedrock-Ready-orange.svg)](aws/architecture.md)
+[![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
 
 ---
 
-## 🌟 Overview
+## 🎯 Problem Statement (PS 01)
 
-**TaskPilot** is a production-ready autonomous AI productivity agent designed to manage everyday user tasks. Instead of functioning as a simple text chatbot, TaskPilot understands natural-language goals, plans required actions, executes specialized tools, persists tasks and context, performs real-world knowledge searches, and enforces human-in-the-loop approval before executing destructive actions.
+Modern users toggle between calendar apps, to-do lists, reminder notifications, email clients, and project boards. While these individual applications exist, **users still bear 100% of the cognitive overhead** to manually decompose broad outcomes, prioritize subtasks, schedule time slots, set alarms, and follow through on deliverables.
+
+### The Solution: TaskPilot Agent
+**TaskPilot Agent** is an autonomous AI productivity layer that transforms high-level natural language goals into concrete multi-step executions. Users declare **outcomes** rather than micromanaging individual tasks:
+
+$$\textbf{User Goal} \longrightarrow \textbf{AI Planning} \longrightarrow \textbf{Tool Selection} \longrightarrow \textbf{Human Confirmation Gate} \longrightarrow \textbf{Tool Execution} \longrightarrow \textbf{State Verification} \longrightarrow \textbf{Result}$$
 
 ---
 
-## 🏗️ Architecture
+## 🚀 Key Differentiator: Autonomous Behavior vs. Simple Chatbots
+
+TaskPilot is **not** a generic conversational chatbot or basic CRUD task manager:
+- 🧠 **Autonomous Decomposition:** Breaks vague goals (e.g., *"Finish my AWS project by Friday"*) into structured milestones with priorities, effort estimates, and dependencies.
+- 🛠 **Tool Framework:** Autonomously invokes tasks, focus schedules, calendar optimizations, reminders, and notifications.
+- 🛡 **Human-in-the-Loop Safety:** Distinguishes between low-risk operations (which execute automatically) and consequential operations (such as task deletion, email dispatch, or large plan activation) requiring human sign-off.
+- 🔍 **Post-Condition State Verification:** Tests whether each executed tool actually mutated the database and satisfied expected conditions before reporting success.
+- 💾 **Non-Sensitive Memory:** Stores and respects user work habits, focus windows (e.g., *evening focus 7 PM - 9 PM*), and cognitive preferences without storing secrets.
+
+---
+
+## 🏗 Autonomous Agent Architecture
+
+The agent orchestration layer is strictly decoupled into modular services under `backend/agent/`:
 
 ```
-                       ┌───────────────────────────────┐
-                       │   Frontend UI (HTML/CSS/JS)   │
-                       │   - Chat & Structured Cards   │
-                       │   - Human Approval Modals     │
-                       │   - Real-Time Health Polling  │
-                       └───────────────▲───────────────┘
-                                       │ HTTP / JSON (Port 8001)
-                                       ▼
-                       ┌───────────────────────────────┐
-                       │     FastAPI Backend Router    │
-                       │     GET /, GET /health        │
-                       │     POST /chat                │
-                       │     GET /tasks                │
-                       └───────────────▲───────────────┘
-                                       │
-                    ┌──────────────────┴──────────────────┐
-                    ▼                                     ▼
-        ┌──────────────────────┐              ┌──────────────────────┐
-        │  Autonomous Agent    │              │ Local Task Engine    │
-        │  - OpenAI Tool Loop  │              │ (Deterministic Fall- │
-        │  - Risk Interceptor  │              │  back for 0-credits) │
-        └───────────┬──────────┘              └──────────┬───────────┘
-                    │                                    │
-                    └──────────────────┬─────────────────┘
-                                       ▼
-                       ┌───────────────────────────────┐
-                       │          Tools Layer          │
-                       ├───────────────────────────────┤
-                       │ • tool_create_task            │
-                       │ • tool_get_tasks              │
-                       │ • tool_complete_task          │
-                       │ • tool_delete_task (Risky)    │
-                       │ • tool_clear_all_tasks (Risky)│
-                       │ • tool_search (Live Wikipedia)│
-                       └───────────────▲───────────────┘
-                                       │
-        ┌──────────────────────────────┼──────────────────────────────┐
-        ▼                              ▼                              ▼
-┌────────────────┐            ┌────────────────┐            ┌────────────────┐
-│  Task Service  │            │ Search Service │            │ Memory Service │
-│ (tasks.json)   │            │ (Live HTTP API)│            │ (Scrubbed JSON)│
-└────────────────┘            └────────────────┘            └────────────────┘
+backend/agent/
+├── orchestrator.py        # Central state machine managing execution lifecycle
+├── intent_analyzer.py     # Intent classification, entity parsing, and memory triggers
+├── planner.py             # Structured plan formulation & milestone decomposition
+├── tool_selector.py       # Tool pipeline assembly & human-safety confirmation check
+├── executor.py            # Tool execution engine with resilient error handling & audit logging
+├── verifier.py            # Post-condition database integrity validation
+├── memory.py              # User habit & preference learning engine
+├── prompts.py             # System prompts and planning templates
+└── providers.py           # AI Provider abstraction (LocalProvider + BedrockProvider)
 ```
 
----
+### Execution State Machine
 
-## 🚀 Key Features
-
-1. **Autonomous Tool Calling**:
-   - Understands user intentions and plans tool calls dynamically.
-   - Extracts task title, priority (`low`, `medium`, `high`), and due date/time (`tomorrow`, `5:00 PM`, etc.).
-2. **Persistent Task Management**:
-   - Create, list, filter (`pending` / `completed`), complete, and delete tasks.
-   - Persisted safely to disk in `data/tasks.json`.
-3. **Live Information Search**:
-   - Real-time Wikipedia public API integration (`search_service.py`).
-   - Zero fake results; extracts summaries, snippets, and verified source links.
-   - Robust timeout and network error handling.
-4. **Human-in-the-Loop Approval (Safety Guard)**:
-   - High-impact and destructive actions (`delete_task`, `clear_all_tasks`) are automatically intercepted.
-   - Returns a structured approval request card with confirmation prompts.
-   - Only executes permanent actions after explicit user confirmation.
-5. **Memory & Secret Scrubbing**:
-   - Retains recent conversation context.
-   - Automatically detects and scrubs API keys, bearer tokens, and credentials (`[REDACTED_SECRET]`) before writing to disk.
-6. **Resilient Error Handling**:
-   - Gracefully handles missing API keys, 401 authentication errors, 429 quota exhaustion, network timeouts, and invalid inputs.
-   - Never crashes with an unhandled 500 error.
-   - Offline fallback engine enables local testing and demonstration even when OpenAI credit balance is exhausted.
-7. **Modern Interactive UI**:
-   - Clean, responsive chat interface.
-   - Dynamic online/offline health indicator polling `http://127.0.0.1:8001/health`.
-   - Structured visual task cards with status badges and due dates.
-   - Interactive Human Approval confirmation cards with Confirm/Cancel buttons.
-   - Quick suggestion prompt chips for rapid demonstration.
-
----
-
-## 📂 Project Structure
-
-```
-taskpilot-agent/
-├── backend/
-│   ├── services/
-│   │   ├── __init__.py
-│   │   ├── task_service.py       # Persistent JSON task CRUD + due date support
-│   │   ├── search_service.py     # Live Wikipedia search with error handling
-│   │   └── memory_service.py     # Conversation memory + regex secret scrubber
-│   ├── __init__.py
-│   ├── agent.py                  # Agent reasoning loop, tool execution, & approval guard
-│   ├── config.py                 # Safe environment configuration loader
-│   ├── main.py                   # FastAPI backend with CORS & error handling
-│   ├── models.py                 # Pydantic schemas (Chat, Tasks, Approvals)
-│   ├── requirements.txt          # Python dependencies
-│   └── tools.py                  # Tool definitions & risky action registry
-├── data/
-│   └── tasks.json                # Task persistence store
-├── frontend/
-│   ├── app.js                    # Chat UI logic, health check, task cards & approvals
-│   ├── index.html                # Responsive web interface with quick prompt chips
-│   └── style.css                 # Clean modern stylesheet
-├── tests/
-│   ├── test_agent.py             # Agent workflows, endpoints, approval & error tests
-│   └── test_tools.py             # Task CRUD, due date, search, risks, & memory tests
-├── .gitignore                    # Ignores .venv, .env, *.log, memory cache
-├── LICENSE                       # MIT License
-└── README.md                     # Documentation & Hackathon guide
+```mermaid
+stateDiagram-v2
+    [*] --> UNDERSTANDING: User Enters Natural Goal
+    UNDERSTANDING --> PLANNING: Intent & Entities Extracted
+    PLANNING --> TOOL_SELECTION: Structured Plan Formulated
+    TOOL_SELECTION --> WAITING_FOR_APPROVAL: Consequential Side-Effects Detected
+    TOOL_SELECTION --> EXECUTING: Low-Risk Safe Actions
+    WAITING_FOR_APPROVAL --> EXECUTING: User Clicks [Approve Plan]
+    WAITING_FOR_APPROVAL --> [*]: User Clicks [Reject]
+    EXECUTING --> VERIFYING: Tool Mutations Dispatched
+    VERIFYING --> COMPLETED: Database State & Post-Conditions Verified
+    VERIFYING --> FAILED: State Inconsistency or Error
+    COMPLETED --> [*]: Execution Summary Reported
 ```
 
 ---
 
-## ⚙️ Setup Instructions
+## 🛠 Tool Framework
 
-### 1. Prerequisites
-- Python 3.10+ (Tested on Python 3.14)
-- A modern web browser (Chrome, Edge, Firefox, Safari)
+Every tool implements the `BaseTool` interface with schema validation, default confirmation flags, and structured `ToolResult` outputs:
 
-### 2. Clone / Open Repository
+1. **Task Tool (`task_tool`)** — Create, update, delete, complete, and list tasks with priority and deadlines. (Deletions trigger confirmation).
+2. **Reminder Tool (`reminder_tool`)** — Schedule in-app alerts, deadline alarms, and dismiss reminders.
+3. **Schedule Tool (`schedule_tool`)** — Generate focus blocks, reschedule, and autonomously optimize daily calendar based on user memory.
+4. **Planning Tool (`planning_tool`)** — Deconstruct high-level goals into phased subtasks with dependency graphs.
+5. **Search Knowledge Tool (`search_knowledge_tool`)** — Curated productivity, time-blocking, and AWS exam guidance.
+6. **Notification Tool (`notification_tool`)** — Dispatch simulated in-app alerts and priority notifications.
+7. **Simulated External Integrations (`simulated_tools`)** — Extensible architecture with explicit `[Demo / Simulated Tool]` tags:
+   - `GmailTool` (Requires confirmation before simulated dispatch)
+   - `SlackTool` (Requires confirmation before simulated broadcast)
+   - `GoogleCalendarTool`
+   - `NotionTool`
+   - `OutlookTool`
+   - `TodoistTool`
+
+---
+
+## 📊 Application Tour & UI Features
+
+| Feature View | Description | Screenshot / Visual |
+| :--- | :--- | :--- |
+| **Dashboard** | Personalized greeting, metric counters, today's core focus, quick command bar with instant scenario chips, and real-time audit stream. | *Metric Cards & Quick Command Box* |
+| **Agent Workspace** | **Hero 3-Column Layout:** (1) Goal Input & Preset Scenarios, (2) Live Execution Timeline with state progress nodes, (3) Visual Plan Breakdown + Approval Card. | *Interactive State Progression* |
+| **Tasks Management** | Toggle between **Kanban Board** (`TODO`, `IN_PROGRESS`, `BLOCKED`, `COMPLETED`) and **List View** with search, priority, and category filters. Includes AI actions (*"Prioritize with AI"*, *"Break into subtasks"*, *"Explain importance"*). | *Kanban + AI Actions* |
+| **Calendar & Schedule** | Daily focus schedule blocks, active reminders, and 1-click **"Optimize my schedule with AI"** button. | *Focus Schedule Stream* |
+| **Activity & Audit Log** | Transparent audit trail listing timestamps, tool names, inputs, outputs, execution time, and verification badges. | *Audit Verification Grid* |
+| **Agent Memory** | Stored user preferences (e.g. `preferred_working_hours`, `preferred_evening_focus`) with manual deletion and safety disclosures. | *User Preferences Cards* |
+
+---
+
+## 🎬 5 Core Demo Scenarios (100% Zero-Key Offline Ready)
+
+TaskPilot includes 5 pre-calibrated demo scenarios runnable from the Agent Workspace or Quick Chips:
+
+1. **Finish AWS Project by Friday (Hero Demo)**:
+   - **Goal:** `"Create a plan to finish my AWS project by Friday."`
+   - **Flow:** Goal understood $\rightarrow$ 6-phase milestone plan generated $\rightarrow$ Tools selected (`planning_tool`, `task_tool`, `schedule_tool`, `reminder_tool`, `notification_tool`) $\rightarrow$ Human approval requested $\rightarrow$ User approves $\rightarrow$ Tasks created $\rightarrow$ Schedule optimized $\rightarrow$ Reminder set $\rightarrow$ Actions verified $\rightarrow$ Completion summary shown.
+2. **Prepare for AWS Exam**:
+   - **Goal:** `"Create a 7-day study plan for my AWS Solutions Architect Associate exam."`
+   - **Flow:** Generates Day 1 through Day 7 study modules and schedules them during evening focus hours based on user memory preferences.
+3. **Plan My Day**:
+   - **Goal:** `"Plan my day and prioritize my tasks."`
+   - **Flow:** Triages urgent items, creates morning deep focus sprints, and organizes the calendar.
+4. **Create Hackathon Plan**:
+   - **Goal:** `"Create a complete hackathon execution plan."`
+   - **Flow:** Decomposes deliverable into app finalization, automated testing, demo video recording, pitch deck, and submission verification.
+5. **Human Safety Interception**:
+   - **Goal:** `"Delete task 1 permanently."`
+   - **Flow:** Agent detects high-risk deletion, halts execution, and renders the confirmation modal before mutating data.
+
+---
+
+## 📦 Technology Stack
+
+- **Backend:** Python 3.11+, FastAPI 2.0, Uvicorn, Pydantic v2
+- **Database:** SQLite with WAL mode, foreign keys, and clean repository abstraction pattern (1:1 mapped to Amazon DynamoDB)
+- **Security:** JWT authentication, bcrypt password hashing, CORS protection, parameter sanitization
+- **AI Engine:**
+  - `LocalProvider`: Deterministic heuristic reasoning engine (100% offline, zero latency, zero API costs)
+  - `BedrockProvider`: Amazon Bedrock integration (`boto3`, Claude 3.5 Sonnet / Amazon Titan) with automatic fallback
+- **Frontend:** Vanilla JavaScript (ES6+), Modern CSS3 with Glassmorphism, Plus Jakarta Sans typography, responsive flex/grid layouts
+- **Testing:** Pytest (30 comprehensive tests covering auth, CRUD, agent orchestrator, tools, approval safety, and health)
+
+---
+
+## 🚦 System Architecture & Cloud Readiness Matrix
+
+To maintain honesty and production transparency:
+
+| Layer | IMPLEMENTED LOCALLY | AWS-READY (ARCHITECTED) | FUTURE SCOPE |
+| :--- | :--- | :--- | :--- |
+| **Compute** | FastAPI + Uvicorn server | AWS Lambda with Mangum ASGI adapter + Amazon API Gateway | Multi-region active-active deployment |
+| **AI Inference**| LocalProvider heuristic engine | Amazon Bedrock Claude 3.5 Sonnet / Titan Text via `boto3` | Amazon Bedrock Agents + OpenSearch Serverless Knowledge Base |
+| **Storage** | SQLite with repository pattern | Amazon DynamoDB Single-Table NoSQL schema (`aws/architecture.md`) | DynamoDB Global Tables with automated backup |
+| **Identity** | JWT + bcrypt password auth | Amazon Cognito User Pools with JWT verification | Enterprise SSO (SAML 2.0 / Okta / Azure AD) |
+| **Hosting** | Local static file server | AWS Amplify Hosting or S3 + CloudFront CDN | Native mobile PWA with WebPush |
+| **Tool APIs** | Native Task, Schedule, Reminders + Simulated External Tools | Lambda event-driven tools + EventBridge | Live OAuth2 integrations with Google Calendar, Gmail, Slack, and Notion |
+
+---
+
+## 💻 Quick Start / Local Setup
+
+### 1. Clone & Navigate
 ```bash
-cd "C:\Users\pravi\OneDrive\Documents\Desktop\taskpilot-agent"
+git clone https://github.com/PRAVIN-KUMAR-295/taskpilot-agent.git
+cd taskpilot-agent
 ```
 
-### 3. Create & Activate Virtual Environment
+### 2. Environment Configuration
+Create or inspect the `.env` file in the root directory:
 ```bash
-# Windows PowerShell
-python -m venv backend\.venv
-.\backend\.venv\Scripts\Activate.ps1
+# Server
+HOST=127.0.0.1
+PORT=8000
+
+# Security
+JWT_SECRET=taskpilot-agent-super-secret-jwt-key-2026
+JWT_EXPIRATION_MINUTES=1440
+
+# AI Provider ("auto", "bedrock", or "local")
+AI_PROVIDER=auto
+
+# Optional: AWS Bedrock Settings (Leave blank to run 100% offline with LocalProvider)
+AWS_REGION=us-east-1
+BEDROCK_MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
 ```
 
-### 4. Install Dependencies
+### 3. Install Dependencies
 ```bash
-pip install -r backend\requirements.txt
+python -m venv backend/.venv
+# On Windows:
+backend\.venv\Scripts\pip install -r backend/requirements.txt
+# On Linux/macOS:
+source backend/.venv/bin/activate && pip install -r backend/requirements.txt
 ```
+
+### 4. Run the Application
+```bash
+# On Windows:
+backend\.venv\Scripts\python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+# On Linux/macOS:
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+### 5. Access the Interface
+Open your browser to:
+👉 **`http://127.0.0.1:8000/`** or **`http://localhost:8000/`**
+
+- Default Demo User: `demo@taskpilot.ai` / password: `password123` (auto-seeded).
 
 ---
 
-## 🔑 Environment Variables
+## 🧪 Testing & Verification
 
-Create or update `.env` in the project root:
+TaskPilot includes a comprehensive suite of **30 automated tests**:
 
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-4o-mini
-```
-
-> **Note:** TaskPilot runs smoothly even if OpenAI credits are temporarily exhausted or offline by leveraging its local deterministic task engine. API keys are never printed, logged, or committed to Git.
-
----
-
-## 🖥️ Running the Application
-
-### 1. Start the Backend API (Port 8001)
-
-From the project root:
 ```bash
-python -m uvicorn backend.main:app --port 8001 --reload
-```
-Or from the `backend/` directory:
-```bash
-cd backend
-python -m uvicorn main:app --port 8001 --reload
+# Run the complete test suite:
+backend\.venv\Scripts\python -m pytest tests/ -v
 ```
 
-Verify backend health in your browser:
-- Status: [http://127.0.0.1:8001/](http://127.0.0.1:8001/)
-- Health Check: [http://127.0.0.1:8001/health](http://127.0.0.1:8001/health)
-- API Docs: [http://127.0.0.1:8001/docs](http://127.0.0.1:8001/docs)
-
-### 2. Launch the Frontend UI
-
-You can open `frontend/index.html` directly in any web browser, or serve it via a local static server:
-```bash
-# Using Python's built-in HTTP server
-python -m http.server 3000 --directory frontend
-```
-Then navigate to: [http://127.0.0.1:3000](http://127.0.0.1:3000)
-
-The UI will automatically connect to `http://127.0.0.1:8001` and display a green **Online** status indicator.
+### Test Coverage Highlights:
+- `tests/test_auth.py` — Password hashing, JWT token issuance, user registration, and login.
+- `tests/test_tasks.py` — Task CRUD, status updates, priority filtering, and AI task actions.
+- `tests/test_agent_orchestrator.py` — Complete agent state machine (`UNDERSTANDING` $\rightarrow$ `PLANNING` $\rightarrow$ `WAITING_FOR_APPROVAL` $\rightarrow$ `EXECUTING` $\rightarrow$ `VERIFYING` $\rightarrow$ `COMPLETED`).
+- `tests/test_tools.py` — Individual validation and execution tests for tools and safety checks.
+- `tests/test_memory_and_schedule.py` — Preference persistence, schedule optimization, and audit logging.
+- `tests/test_agent.py` — Backward compatibility and error handling tests.
 
 ---
 
-## 🧪 Running Tests
+## ☁️ AWS Deployment Documentation
 
-Run the comprehensive pytest suite covering all target features:
-```bash
-pytest -v
-```
-
-### Verified Test Suite:
-- `test_home_endpoint`: Root API status verification.
-- `test_health_endpoint`: Health metrics and task counts.
-- `test_chat_invalid_empty_input`: Graceful validation of blank inputs.
-- `test_agent_task_creation_workflow`: End-to-end task creation with priority and due date.
-- `test_agent_task_listing_workflow`: Retrieval of stored and pending tasks.
-- `test_agent_task_completion_workflow`: Task state transitions.
-- `test_human_approval_intercepts_risky_deletion`: Risky action interception & approval confirmation.
-- `test_chat_endpoint_full_flow`: Chat endpoint communication.
-- `test_agent_handles_openai_auth_error`: Resilient handling of 401 Authentication errors.
-- `test_agent_handles_openai_rate_limit_error`: Resilient handling of 429 Quota Exhaustion.
-- `test_task_creation_with_due_date_and_priority`: Task storage properties.
-- `test_task_creation_validation`: Title input constraints.
-- `test_task_listing_and_filtering`: Filter by pending/completed.
-- `test_task_completion`: Task ID completion logic.
-- `test_risky_action_detection_and_deletion`: Safe execution of destructive operations.
-- `test_real_search_service`: Live Wikipedia search retrieval.
-- `test_search_service_empty_query`: Search validation.
-- `test_memory_service_secret_scrubbing`: Key masking (`[REDACTED_SECRET]`).
-
-**Result:** `18 passed in 38s` (100% passing).
+Detailed cloud infrastructure blueprints and deployment guides are available in the `/aws` folder:
+- 📖 [**AWS Architecture Guide (`aws/architecture.md`)**](aws/architecture.md) — Single-Table DynamoDB schema design, Bedrock runtime invocation architecture, and security policies.
+- 🚀 [**AWS Deployment Guide (`aws/deployment.md`)**](aws/deployment.md) — Serverless Application Model (SAM) templates, Amplify deployment steps, and Bedrock IAM permissions.
 
 ---
 
-## 💬 Example User Prompts
+## 🛡 Security & Human-in-the-Loop Safeguards
 
-| User Prompt | Agent Autonomous Behavior |
-| :--- | :--- |
-| `"Create a task to prepare my hackathon presentation tomorrow with high priority"` | Extracts title, sets `priority=high`, `due_date=tomorrow`, saves task, and renders task card. |
-| `"Show me my pending tasks"` | Retrieves active tasks from `data/tasks.json` and renders interactive cards. |
-| `"Complete task #1"` | Updates status to `completed` and returns confirmation. |
-| `"Delete task #1"` | **Halts execution.** Displays **Action Approval Required** card asking the user to confirm. |
-| `"Search for Artificial Intelligence"` | Queries live Wikipedia API and returns synthesized facts with source citations. |
+1. **No Credentials in Frontend:** No secret keys or cloud tokens are ever served to or stored on client devices.
+2. **Approval Gates for Consequential Mutations:** Deletions, table purges, and communication dispatches pause execution until approved.
+3. **Password Security:** Salted bcrypt password hashing with constant-time verification.
+4. **Clean Error Handling:** Catches all exceptions gracefully and provides user-friendly recovery messages without leaking stack traces.
+5. **Privacy Memory Scrubbing:** Non-sensitive preferences only; sensitive credentials and tokens are scrubbed.
 
 ---
 
-## 🛡️ Security & Privacy
+## 📄 License
 
-- **No Hardcoded Secrets**: Secrets are loaded exclusively from `.env`.
-- **Git Protection**: `.env`, `*.log`, and `data/memory.json` are strictly ignored in `.gitignore`.
-- **Automatic Secret Scrubbing**: All messages passed through `memory_service` are checked against secret patterns and sanitized prior to disk storage.
-- **Human-in-the-Loop**: Permanent data deletion cannot be triggered silently by prompt injection or model hallucination.
-
----
-
-## ⚠️ Known Limitations & Future Work
-
-- **OpenAI Quota**: In environments where OpenAI credits are depleted (Error 429), TaskPilot automatically falls back to its deterministic local engine so all everyday task workflows remain fully operational.
-- **Calendar Integrations**: Future versions can connect directly to Google Calendar / Outlook APIs for automatic calendar synchronization.
-- **Multi-User Support**: Currently designed for single-user local productivity with local JSON persistence; multi-tenant database support (PostgreSQL/SQLite) can be integrated seamlessly.#   t a s k p i l o t - a g e n t  
- 
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

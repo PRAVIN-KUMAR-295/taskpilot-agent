@@ -1,89 +1,769 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskPilot AI — Autonomous Task Agent</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskPilot Agent — Autonomous AI Agent for Everyday Apps</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
+<body class="dark-theme">
 
-<body>
+  <!-- Application Shell -->
+  <div id="app" class="app-layout">
 
-    <div class="app">
-
-        <header class="header">
-            <div>
-                <div class="brand-row">
-                    <h1>TaskPilot AI</h1>
-                    <span class="badge-agent">Autonomous Agent</span>
-                </div>
-                <p>Everyday Productivity & Autonomous Workflow Assistant</p>
+    <!-- Top Navigation Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="brand-title">
+              <span class="gradient-text">TaskPilot</span> Agent
+              <span class="badge-ps">PS 01</span>
             </div>
+            <div class="brand-subtitle">Autonomous Agent for Everyday Apps</div>
+          </div>
+        </div>
+      </div>
 
-            <div class="status" id="backendStatus" title="Backend connection status">
-                <span class="status-dot checking" id="statusDot"></span>
-                <span id="statusText">Connecting...</span>
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" id="navTabs">
+        <button class="nav-tab active" data-tab="dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Dashboard
+        </button>
+        <button class="nav-tab nav-tab-highlight" data-tab="workspace">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          Agent Workspace
+          <span class="tab-badge">Hero</span>
+        </button>
+        <button class="nav-tab" data-tab="tasks">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Tasks
+        </button>
+        <button class="nav-tab" data-tab="calendar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Schedule
+        </button>
+        <button class="nav-tab" data-tab="activity">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          Activity Log
+        </button>
+        <button class="nav-tab" data-tab="memory">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          Memory
+        </button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="topbar-right">
+        <!-- Agent Health Indicator -->
+        <div class="agent-status-pill" id="agentStatusPill" title="TaskPilot Agent Status">
+          <span class="status-pulse"></span>
+          <span class="status-label" id="agentStatusLabel">Agent Online (Local/Bedrock)</span>
+        </div>
+
+        <!-- Demo Presets Trigger -->
+        <button id="btnDemoMode" class="btn-demo-mode" title="Launch Hackathon Demo Scenarios">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+          Demo Scenarios
+        </button>
+
+        <!-- User Profile Pill -->
+        <div class="user-pill" id="userPill">
+          <div class="user-avatar" id="userAvatar">TP</div>
+          <span class="user-name" id="userNameDisplay">Demo User</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Stage -->
+    <main class="main-content">
+
+      <!-- ==============================================
+           TAB 1: DASHBOARD
+           ============================================== -->
+      <section id="viewDashboard" class="view-section active">
+        <!-- Personalized Welcome Banner -->
+        <div class="welcome-banner glass-card">
+          <div class="welcome-info">
+            <h1 class="welcome-greeting" id="welcomeGreeting">Good afternoon, Hackathon Judge! 👋</h1>
+            <p class="welcome-desc">
+              TaskPilot autonomous agent layer coordinates your everyday tasks, schedules focus windows, and executes tool actions.
+            </p>
+            <div class="command-box">
+              <input type="text" id="dashboardCommandInput" placeholder="Tell TaskPilot what you want to accomplish... (e.g. 'Plan my day and prioritize my tasks')" autocomplete="off">
+              <button id="btnDashboardRun" class="btn-primary">
+                <span>Engage Agent</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
             </div>
-        </header>
-
-        <main class="chat-container">
-
             <!-- Quick Suggestion Chips -->
-            <div class="quick-chips">
-                <button type="button" class="chip" data-prompt="Create a task to prepare my hackathon presentation tomorrow with high priority">
-                    + Presentation Task
-                </button>
-                <button type="button" class="chip" data-prompt="Show me my pending tasks">
-                    📋 View Tasks
-                </button>
-                <button type="button" class="chip" data-prompt="Search for Artificial Intelligence trends">
-                    🔍 Search AI
-                </button>
-                <button type="button" class="chip" data-prompt="Complete task #1">
-                    ✓ Complete Task
-                </button>
-                <button type="button" class="chip" data-prompt="Delete task #1">
-                    ⚠️ Test Approval
-                </button>
+            <div class="quick-presets">
+              <span class="presets-label">Quick Scenarios:</span>
+              <button class="chip" data-prompt="Create a plan to finish my AWS project by Friday.">🚀 Finish AWS Project by Friday</button>
+              <button class="chip" data-prompt="Create a study plan for my AWS exam next week.">📚 7-Day AWS Exam Plan</button>
+              <button class="chip" data-prompt="Plan my day and prioritize my tasks.">⚡ Plan My Day</button>
+              <button class="chip" data-prompt="Optimize my schedule for peak evening focus.">📅 Optimize Schedule</button>
+              <button class="chip" data-prompt="Remind me to submit the hackathon presentation tomorrow at 8 PM.">⏰ Assignment Reminder</button>
+            </div>
+          </div>
+
+          <!-- Agent State Widget -->
+          <div class="agent-hero-widget">
+            <div class="widget-header">
+              <span class="widget-title">Agent Orchestrator</span>
+              <span class="widget-badge" id="dashAgentBadge">Autonomous Mode</span>
+            </div>
+            <div class="agent-pipeline-preview">
+              <div class="pipeline-step done"><span>1</span> Intent</div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step done"><span>2</span> Plan</div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step active"><span>3</span> Tools</div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><span>4</span> Verify</div>
+            </div>
+            <div class="hero-stats-row">
+              <div class="hero-stat">
+                <div class="hero-stat-val" id="statToolsCount">12</div>
+                <div class="hero-stat-lbl">Connected Tools</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-val" id="statMemoryCount">5</div>
+                <div class="hero-stat-lbl">Active Preferences</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card glass-card">
+            <div class="stat-header">
+              <span class="stat-label">Pending Tasks</span>
+              <span class="stat-icon-wrap warning">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </span>
+            </div>
+            <div class="stat-value" id="statPendingTasks">0</div>
+            <div class="stat-sub">Needs attention</div>
+          </div>
+
+          <div class="stat-card glass-card">
+            <div class="stat-header">
+              <span class="stat-label">Completed Tasks</span>
+              <span class="stat-icon-wrap success">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </span>
+            </div>
+            <div class="stat-value" id="statCompletedTasks">0</div>
+            <div class="stat-sub"><span id="statCompletionRate">0%</span> completion rate</div>
+          </div>
+
+          <div class="stat-card glass-card">
+            <div class="stat-header">
+              <span class="stat-label">Urgent Focus</span>
+              <span class="stat-icon-wrap danger">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </span>
+            </div>
+            <div class="stat-value" id="statUrgentTasks">0</div>
+            <div class="stat-sub">High cognitive priority</div>
+          </div>
+
+          <div class="stat-card glass-card">
+            <div class="stat-header">
+              <span class="stat-label">Scheduled Focus Blocks</span>
+              <span class="stat-icon-wrap primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+              </span>
+            </div>
+            <div class="stat-value" id="statScheduledBlocks">0</div>
+            <div class="stat-sub">Optimized for today</div>
+          </div>
+        </div>
+
+        <!-- Dashboard Split Columns -->
+        <div class="dashboard-columns">
+          <!-- Left: Today's Focus Tasks -->
+          <div class="col-half glass-card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Today's Core Focus
+              </div>
+              <button class="btn-text-action" id="btnDashViewAllTasks">View All Tasks →</button>
+            </div>
+            <div class="tasks-mini-list" id="dashTasksList">
+              <div class="skeleton-row"></div>
+            </div>
+          </div>
+
+          <!-- Right: Recent Agent Actions (Live Stream) -->
+          <div class="col-half glass-card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                Autonomous Agent Audit Trail
+              </div>
+              <button class="btn-text-action" id="btnDashViewAudit">Audit Log →</button>
+            </div>
+            <div class="audit-mini-stream" id="dashAuditStream">
+              <div class="skeleton-row"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 2: AGENT WORKSPACE (HERO FEATURE)
+           ============================================== -->
+      <section id="viewWorkspace" class="view-section">
+        <div class="workspace-grid">
+
+          <!-- COLUMN 1: Goal & Conversation Input -->
+          <div class="workspace-col col-command glass-card">
+            <div class="col-header">
+              <div class="col-title">
+                <span class="col-number">1</span>
+                <span>User Goal Input</span>
+              </div>
+              <div class="badge-subtle">Natural Language</div>
             </div>
 
-            <div id="chatBox" class="chat-box">
+            <!-- Pre-engineered Hackathon Demo Scenarios -->
+            <div class="demo-scenario-box">
+              <div class="scenario-title">Preset Scenarios (1-Click Run):</div>
+              <div class="scenario-buttons">
+                <button class="btn-scenario active" data-scenario="aws-friday">
+                  <span class="sc-icon">🚀</span>
+                  <div class="sc-content">
+                    <div class="sc-heading">Finish AWS Project by Friday</div>
+                    <div class="sc-sub">Multi-step plan + approval + schedule</div>
+                  </div>
+                </button>
+                <button class="btn-scenario" data-scenario="aws-study">
+                  <span class="sc-icon">📚</span>
+                  <div class="sc-content">
+                    <div class="sc-heading">Prepare for AWS Exam</div>
+                    <div class="sc-sub">7-day breakdown + evening focus</div>
+                  </div>
+                </button>
+                <button class="btn-scenario" data-scenario="plan-day">
+                  <span class="sc-icon">⚡</span>
+                  <div class="sc-content">
+                    <div class="sc-heading">Plan My Day & Prioritize</div>
+                    <div class="sc-sub">Task triage + schedule alignment</div>
+                  </div>
+                </button>
+                <button class="btn-scenario" data-scenario="hackathon-plan">
+                  <span class="sc-icon">🏆</span>
+                  <div class="sc-content">
+                    <div class="sc-heading">Create Hackathon Plan</div>
+                    <div class="sc-sub">Milestones + pitch prep + demo</div>
+                  </div>
+                </button>
+                <button class="btn-scenario" data-scenario="safety-test">
+                  <span class="sc-icon">⚠️</span>
+                  <div class="sc-content">
+                    <div class="sc-heading">Test Human Safety Confirmation</div>
+                    <div class="sc-sub">Delete task / external side-effects</div>
+                  </div>
+                </button>
+              </div>
+            </div>
 
-                <div class="message assistant">
-                    <div class="avatar">AI</div>
-                    <div class="message-content">
-                        <div class="sender">TaskPilot</div>
-                        <div class="bubble">
-                            Hello! I am <strong>TaskPilot</strong>, your autonomous agent for everyday tasks.
-                            <br><br>
-                            I can manage tasks, track due dates, research information, and ask for confirmation before risky actions.
-                            <br><br>
-                            <em>Try saying: "Create a task to finish the hackathon demo tomorrow" or click one of the quick prompts above.</em>
-                        </div>
-                    </div>
+            <!-- Chat History / Conversation Output -->
+            <div class="chat-stream" id="workspaceChatStream">
+              <div class="chat-msg system">
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble">
+                  <div class="chat-sender">TaskPilot Orchestrator</div>
+                  <p>Welcome to <strong>Agent Workspace</strong>. State your goal, and watch the agent understand, plan, select tools, request confirmation, execute, and verify results in real time.</p>
                 </div>
-
+              </div>
             </div>
 
-            <div class="input-area">
-                <input
-                    id="messageInput"
-                    type="text"
-                    placeholder="Ask TaskPilot to plan, create tasks, search info..."
-                    autocomplete="off"
-                >
-                <button id="sendButton" type="button">
-                    Send
+            <!-- Command Input Box -->
+            <div class="command-input-container">
+              <div class="command-input-row">
+                <textarea id="workspaceGoalInput" rows="2" placeholder="e.g. 'Create a plan to finish my AWS project by Friday.'" autocomplete="off"></textarea>
+                <button id="btnWorkspaceRun" class="btn-primary btn-run">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 </button>
+              </div>
+              <div class="input-hints">
+                <span>Tip: Say <em>"I prefer studying in the evening"</em> to teach TaskPilot your habits.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 2: Agent Execution Timeline -->
+          <div class="workspace-col col-timeline glass-card">
+            <div class="col-header">
+              <div class="col-title">
+                <span class="col-number">2</span>
+                <span>Execution Timeline</span>
+              </div>
+              <div class="agent-live-badge" id="timelineLiveState">READY</div>
             </div>
 
-        </main>
+            <!-- Interactive State Progress Bar -->
+            <div class="state-progress-bar" id="stateProgressBar">
+              <div class="state-node" data-state="UNDERSTANDING">
+                <div class="node-circle">1</div>
+                <div class="node-label">Understand</div>
+              </div>
+              <div class="state-connector"></div>
+              <div class="state-node" data-state="PLANNING">
+                <div class="node-circle">2</div>
+                <div class="node-label">Plan</div>
+              </div>
+              <div class="state-connector"></div>
+              <div class="state-node" data-state="TOOL_SELECTION">
+                <div class="node-circle">3</div>
+                <div class="node-label">Select Tools</div>
+              </div>
+              <div class="state-connector"></div>
+              <div class="state-node" data-state="CONFIRMATION">
+                <div class="node-circle">4</div>
+                <div class="node-label">Approval</div>
+              </div>
+              <div class="state-connector"></div>
+              <div class="state-node" data-state="EXECUTING">
+                <div class="node-circle">5</div>
+                <div class="node-label">Execute</div>
+              </div>
+              <div class="state-connector"></div>
+              <div class="state-node" data-state="VERIFYING">
+                <div class="node-circle">6</div>
+                <div class="node-label">Verify</div>
+              </div>
+            </div>
 
+            <!-- Step by Step Timeline Events Stream -->
+            <div class="timeline-stream" id="timelineStream">
+              <div class="timeline-empty-state">
+                <div class="empty-icon">⚡</div>
+                <p>Run a scenario or enter a goal on the left to watch autonomous execution unfold step-by-step.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 3: Plan + Tasks + Approval Card -->
+          <div class="workspace-col col-results glass-card">
+            <div class="col-header">
+              <div class="col-title">
+                <span class="col-number">3</span>
+                <span>Plan & Execution Outcome</span>
+              </div>
+              <span class="badge-subtle" id="planTasksCount">0 Tasks</span>
+            </div>
+
+            <!-- Human in the loop confirmation card -->
+            <div class="approval-card hidden" id="humanApprovalCard">
+              <div class="approval-badge">⚠️ Action Confirmation Required</div>
+              <div class="approval-title" id="approvalCardTitle">Approve Execution Plan</div>
+              <div class="approval-desc" id="approvalCardDesc">The agent generated subtasks and prepared tool executions. Confirmation is required before database mutation.</div>
+              <div class="approval-actions-row">
+                <button class="btn-approve" id="btnApprovePlan">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Approve & Execute Autonomously
+                </button>
+                <button class="btn-reject" id="btnRejectPlan">Reject Plan</button>
+              </div>
+            </div>
+
+            <!-- Structured Visual Plan View -->
+            <div class="plan-visualizer" id="planVisualizer">
+              <div class="plan-empty-placeholder">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg>
+                <p>Generated plans and subtask breakdowns will be rendered here.</p>
+              </div>
+            </div>
+
+            <!-- Execution Verification Summary -->
+            <div class="verification-summary-card hidden" id="verificationSummaryCard">
+              <div class="ver-header">
+                <div class="ver-icon">✓</div>
+                <div class="ver-info">
+                  <div class="ver-title">Verification Complete</div>
+                  <div class="ver-subtitle" id="verSummaryText">All actions successfully verified against database.</div>
+                </div>
+              </div>
+              <div class="ver-items" id="verSummaryItems"></div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 3: TASKS MANAGEMENT (KANBAN & LIST)
+           ============================================== -->
+      <section id="viewTasks" class="view-section">
+        <div class="tasks-page-header glass-card">
+          <div class="tasks-page-left">
+            <h2>Task Management</h2>
+            <div class="tasks-view-toggles">
+              <button class="btn-toggle active" id="btnViewKanban">Kanban Board</button>
+              <button class="btn-toggle" id="btnViewList">List View</button>
+            </div>
+          </div>
+          <div class="tasks-page-controls">
+            <!-- Search & Filters -->
+            <input type="text" id="taskSearchInput" placeholder="Search tasks..." class="task-search-input">
+            <select id="taskPriorityFilter" class="select-filter">
+              <option value="">All Priorities</option>
+              <option value="URGENT">Urgent</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+            <select id="taskCategoryFilter" class="select-filter">
+              <option value="">All Categories</option>
+              <option value="Cloud">Cloud</option>
+              <option value="Hackathon">Hackathon</option>
+              <option value="Testing">Testing</option>
+              <option value="General">General</option>
+            </select>
+            <button class="btn-primary" id="btnOpenNewTaskModal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              New Task
+            </button>
+          </div>
+        </div>
+
+        <!-- Kanban Board Container -->
+        <div class="kanban-board" id="kanbanBoard">
+          <!-- Col 1: TODO -->
+          <div class="kanban-col" data-status="TODO">
+            <div class="kanban-col-header">
+              <div class="col-header-left">
+                <span class="status-dot dot-todo"></span>
+                <span class="kanban-col-title">To Do</span>
+              </div>
+              <span class="kanban-count" id="countTodo">0</span>
+            </div>
+            <div class="kanban-cards-list" id="listTodo"></div>
+          </div>
+
+          <!-- Col 2: IN_PROGRESS -->
+          <div class="kanban-col" data-status="IN_PROGRESS">
+            <div class="kanban-col-header">
+              <div class="col-header-left">
+                <span class="status-dot dot-progress"></span>
+                <span class="kanban-col-title">In Progress</span>
+              </div>
+              <span class="kanban-count" id="countProgress">0</span>
+            </div>
+            <div class="kanban-cards-list" id="listProgress"></div>
+          </div>
+
+          <!-- Col 3: BLOCKED -->
+          <div class="kanban-col" data-status="BLOCKED">
+            <div class="kanban-col-header">
+              <div class="col-header-left">
+                <span class="status-dot dot-blocked"></span>
+                <span class="kanban-col-title">Blocked</span>
+              </div>
+              <span class="kanban-count" id="countBlocked">0</span>
+            </div>
+            <div class="kanban-cards-list" id="listBlocked"></div>
+          </div>
+
+          <!-- Col 4: COMPLETED -->
+          <div class="kanban-col" data-status="COMPLETED">
+            <div class="kanban-col-header">
+              <div class="col-header-left">
+                <span class="status-dot dot-completed"></span>
+                <span class="kanban-col-title">Completed</span>
+              </div>
+              <span class="kanban-count" id="countCompleted">0</span>
+            </div>
+            <div class="kanban-cards-list" id="listCompleted"></div>
+          </div>
+        </div>
+
+        <!-- List View Container (Hidden by default) -->
+        <div class="tasks-table-container glass-card hidden" id="tasksListContainer">
+          <table class="tasks-table">
+            <thead>
+              <tr>
+                <th width="40">Status</th>
+                <th>Task Title</th>
+                <th width="120">Priority</th>
+                <th width="140">Category</th>
+                <th width="160">Due Date</th>
+                <th width="100">Duration</th>
+                <th width="100">Source</th>
+                <th width="180">AI Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tasksTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 4: CALENDAR / SCHEDULE
+           ============================================== -->
+      <section id="viewCalendar" class="view-section">
+        <div class="calendar-header-card glass-card">
+          <div class="cal-header-left">
+            <h2>Calendar & Focus Schedules</h2>
+            <p>Intelligent time blocks mapped to your working hours and peak focus intervals.</p>
+          </div>
+          <div class="cal-header-actions">
+            <button class="btn-primary" id="btnOptimizeSchedule">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              Optimize My Schedule with AI
+            </button>
+            <button class="btn-secondary" id="btnAddScheduleBlock">
+              + New Focus Block
+            </button>
+          </div>
+        </div>
+
+        <div class="calendar-grid-layout">
+          <!-- Left: Scheduled Focus Blocks -->
+          <div class="calendar-blocks-panel glass-card">
+            <div class="panel-heading">
+              <h3>Today's Focus Schedule</h3>
+              <span class="badge-subtle" id="scheduleCountBadge">0 Blocks</span>
+            </div>
+            <div class="schedule-blocks-stream" id="scheduleBlocksStream"></div>
+          </div>
+
+          <!-- Right: Active Reminders & Notifications -->
+          <div class="reminders-panel glass-card">
+            <div class="panel-heading">
+              <h3>Upcoming Reminders</h3>
+              <button class="btn-text-action" id="btnCreateReminder">+ Add Reminder</button>
+            </div>
+            <div class="reminders-stream" id="remindersStream"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 5: ACTIVITY & AUDIT LOG
+           ============================================== -->
+      <section id="viewActivity" class="view-section">
+        <div class="activity-header glass-card">
+          <div class="act-header-info">
+            <h2>Autonomous Agent Audit Trail</h2>
+            <p>Full transparency and verification checks for every action executed by TaskPilot.</p>
+          </div>
+          <button class="btn-secondary" id="btnRefreshActivity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Refresh Logs
+          </button>
+        </div>
+
+        <div class="activity-table-card glass-card">
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th width="120">Timestamp</th>
+                <th>Action</th>
+                <th width="160">Tool</th>
+                <th width="120">Status</th>
+                <th width="120">Verification</th>
+                <th width="140">Duration</th>
+                <th width="100">Details</th>
+              </tr>
+            </thead>
+            <tbody id="activityTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           TAB 6: AGENT MEMORY
+           ============================================== -->
+      <section id="viewMemory" class="view-section">
+        <div class="memory-header glass-card">
+          <div class="mem-header-info">
+            <h2>Agent Memory & User Preferences</h2>
+            <p>TaskPilot remembers your working hours, preferred study habits, and constraints to tailor future planning.</p>
+          </div>
+          <button class="btn-primary" id="btnAddMemory">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add Preference
+          </button>
+        </div>
+
+        <div class="memory-grid" id="memoryCardsGrid"></div>
+
+        <div class="memory-disclosure glass-card">
+          <div class="disclosure-icon">🔒</div>
+          <div class="disclosure-text">
+            <strong>Privacy & Security Policy:</strong> TaskPilot only persists non-sensitive operational preferences. Passwords, API tokens, payment credentials, and confidential personal data are strictly scrubbed and never stored in memory.
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==============================================
+       MODALS
+       ============================================== -->
+
+  <!-- Task Create / Edit Modal -->
+  <div class="modal-overlay hidden" id="taskModal">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h3 id="taskModalTitle">Create New Task</h3>
+        <button class="btn-close-modal" id="btnCloseTaskModal">✕</button>
+      </div>
+      <form id="taskForm">
+        <div class="form-group">
+          <label>Task Title *</label>
+          <input type="text" id="taskInputTitle" required placeholder="e.g. Finalize AWS Cloud Architecture">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="taskInputDesc" rows="3" placeholder="Provide context, deliverables, or checklist..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label>Priority</label>
+            <select id="taskInputPriority">
+              <option value="LOW">Low</option>
+              <option value="MEDIUM" selected>Medium</option>
+              <option value="HIGH">High</option>
+              <option value="URGENT">Urgent</option>
+            </select>
+          </div>
+          <div class="form-group col-half">
+            <label>Category</label>
+            <input type="text" id="taskInputCategory" value="General" placeholder="e.g. Cloud, Hackathon">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label>Due Date / Time</label>
+            <input type="text" id="taskInputDueDate" placeholder="e.g. Tomorrow at 6:00 PM">
+          </div>
+          <div class="form-group col-half">
+            <label>Estimated Minutes</label>
+            <input type="number" id="taskInputDuration" value="45" min="5" max="480">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelTaskModal">Cancel</button>
+          <button type="submit" class="btn-primary">Save Task</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <script src="app.js"></script>
+  <!-- Add Memory Modal -->
+  <div class="modal-overlay hidden" id="memoryModal">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h3>Add User Preference</h3>
+        <button class="btn-close-modal" id="btnCloseMemoryModal">✕</button>
+      </div>
+      <form id="memoryForm">
+        <div class="form-group">
+          <label>Preference Key *</label>
+          <input type="text" id="memInputKey" required placeholder="e.g. preferred_working_hours">
+        </div>
+        <div class="form-group">
+          <label>Preference Value *</label>
+          <input type="text" id="memInputValue" required placeholder="e.g. 09:00 AM - 06:00 PM">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="memInputCategory">
+            <option value="preference">Preference</option>
+            <option value="habit">Habit / Schedule</option>
+            <option value="work_hours">Work Hours</option>
+            <option value="constraint">Constraint</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelMemoryModal">Cancel</button>
+          <button type="submit" class="btn-primary">Save Preference</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
+  <!-- Add Schedule Block Modal -->
+  <div class="modal-overlay hidden" id="scheduleModal">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h3>Create Focus Block</h3>
+        <button class="btn-close-modal" id="btnCloseScheduleModal">✕</button>
+      </div>
+      <form id="scheduleForm">
+        <div class="form-group">
+          <label>Block Title *</label>
+          <input type="text" id="schInputTitle" required placeholder="e.g. Deep Work: System Architecture">
+        </div>
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label>Start Time *</label>
+            <input type="text" id="schInputStart" required placeholder="09:00 AM">
+          </div>
+          <div class="form-group col-half">
+            <label>End Time *</label>
+            <input type="text" id="schInputEnd" required placeholder="10:30 AM">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label>Session Type</label>
+            <select id="schInputType">
+              <option value="focus">Deep Focus</option>
+              <option value="study">Study / Exam Prep</option>
+              <option value="meeting">Sync / Meeting</option>
+              <option value="review">Review & Testing</option>
+            </select>
+          </div>
+          <div class="form-group col-half">
+            <label>Day</label>
+            <input type="text" id="schInputDay" value="Today">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelScheduleModal">Cancel</button>
+          <button type="submit" class="btn-primary">Schedule Block</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog Modal for Risky Actions -->
+  <div class="modal-overlay hidden" id="confirmDialogModal">
+    <div class="modal-card glass-card dialog-card">
+      <div class="dialog-icon warning">⚠️</div>
+      <h3 id="confirmDialogTitle">Confirmation Required</h3>
+      <p id="confirmDialogDesc">Are you sure you want to proceed with this consequential action?</p>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnDialogCancel">Cancel</button>
+        <button type="button" class="btn-danger" id="btnDialogConfirm">Confirm Action</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
 </body>
-
 </html>
