@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+pyjwt
+bcrypt
+boto3
+pytest
+requests
