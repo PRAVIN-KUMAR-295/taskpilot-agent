@@ -3,10 +3,14 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 import sqlite3
 
-# Ensure backend directory is in sys.path
+# Ensure backend directory and root are in sys.path
 backend_dir = Path(__file__).resolve().parent
-if str(backend_dir) not in sys.path:
-    sys.path.insert(0, str(backend_dir))
+root_dir = backend_dir.parent
+for p in [str(backend_dir), str(root_dir)]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+frontend_path = (root_dir / "frontend").resolve()
 
 from fastapi import FastAPI, HTTPException, Depends, Query, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -71,6 +75,11 @@ app.add_middleware(
 )
 
 
+# Mount static frontend directory if present
+if frontend_path.is_dir():
+    app.mount("/static", StaticFiles(directory=str(frontend_path)), name="static")
+
+
 @app.on_event("startup")
 def on_startup():
     """Initialize SQLite database and seed demo data."""
@@ -90,7 +99,7 @@ def home(request: Request):
     accept = request.headers.get("accept", "")
     if "text/html" in accept and "application/json" not in accept:
         index_file = frontend_path / "index.html"
-        if index_file.exists():
+        if index_file.is_file():
             return FileResponse(index_file)
     return {
         "status": "online",
@@ -102,15 +111,24 @@ def home(request: Request):
 
 @app.get("/app")
 def serve_app():
-    return FileResponse(frontend_path / "index.html")
+    index_file = frontend_path / "index.html"
+    if index_file.is_file():
+        return FileResponse(index_file)
+    raise HTTPException(status_code=404, detail="Frontend index.html not found.")
 
 @app.get("/style.css")
 def serve_css():
-    return FileResponse(frontend_path / "style.css", media_type="text/css")
+    css_file = frontend_path / "style.css"
+    if css_file.is_file():
+        return FileResponse(css_file, media_type="text/css")
+    raise HTTPException(status_code=404, detail="style.css not found.")
 
 @app.get("/app.js")
 def serve_js():
-    return FileResponse(frontend_path / "app.js", media_type="application/javascript")
+    js_file = frontend_path / "app.js"
+    if js_file.is_file():
+        return FileResponse(js_file, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found.")
 
 
 
@@ -666,11 +684,7 @@ def chat(
             success=False,
             error=str(e)
         )
-
-
-# ==========================================
-# STATIC FILES SERVING FOR FRONTEND
-# ==========================================
-frontend_path = backend_dir.parent / "frontend"
-if frontend_path.exists():
-    app.mount("/static", StaticFiles(directory=str(frontend_path)), name="static")
+if __name__ == "__main__":
+    import uvicorn
+    from config import HOST, PORT
+    uvicorn.run(app, host=HOST, port=PORT)

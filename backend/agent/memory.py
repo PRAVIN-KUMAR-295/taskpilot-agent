@@ -1,5 +1,6 @@
 import re
 import sqlite3
+from typing import Dict, Any, Optional, List
 try:
     from database.repositories import MemoryRepository
 except ImportError:

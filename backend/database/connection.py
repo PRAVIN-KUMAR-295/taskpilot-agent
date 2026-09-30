@@ -1,6 +1,7 @@
 import sqlite3
 import threading
 from pathlib import Path
+from typing import Generator
 try:
     from config import DATABASE_PATH
 except ImportError:

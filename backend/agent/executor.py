@@ -1,5 +1,6 @@
 import sqlite3
 import time
+from typing import List, Dict, Any, Optional
 try:
     from tools.registry import default_registry
     from database.repositories import AgentActionRepository

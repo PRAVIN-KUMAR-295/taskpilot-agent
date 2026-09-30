@@ -9,8 +9,12 @@ if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
 
-import openai
-from openai import OpenAI
+try:
+    import openai
+    from openai import OpenAI
+except ImportError:
+    openai = None
+    OpenAI = None
 
 from config import OPENAI_API_KEY, MODEL_NAME, is_openai_configured
 from tools import (
@@ -32,11 +36,14 @@ from services.memory_service import (
 _client = None
 
 
-def get_client() -> Optional[OpenAI]:
+def get_client() -> Optional[Any]:
     """Get or initialize OpenAI client."""
     global _client
-    if _client is None and is_openai_configured():
-        _client = OpenAI(api_key=OPENAI_API_KEY, timeout=3.0, max_retries=0)
+    if _client is None and is_openai_configured() and OpenAI is not None:
+        try:
+            _client = OpenAI(api_key=OPENAI_API_KEY, timeout=3.0, max_retries=0)
+        except Exception:
+            _client = None
     return _client
 
 
